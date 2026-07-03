@@ -1,0 +1,6 @@
+BUILD 1.0.0
+- Startup framework
+- Auto-create folders
+- Config creation
+- Log creation
+- Basic GUI
