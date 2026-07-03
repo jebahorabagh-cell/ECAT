@@ -218,3 +218,7 @@ class FilesPage(tk.Frame):
                         item["status"]
                     )
                 )
+        print("\nDetected Common Columns")
+        print("-----------------------")
+        print(self.common_columns)        
+    

@@ -15,30 +15,23 @@ Purpose
 """
 
 from pathlib import Path
-
 import pandas as pd
 
 
 class ExcelService:
 
     def __init__(self):
-
-        # Cache
-        # Key = full file path
-        # Value = metadata dictionary
+        # Cache: full file path -> workbook data
         self.cache = {}
 
     # --------------------------------------------------
 
     def load_file(self, file_path):
-
         """
-        Read an Excel file only once and
-        store everything required for future use.
+        Read Excel file once and cache results.
         """
 
         file_path = Path(file_path)
-
         key = str(file_path)
 
         if key in self.cache:
@@ -48,26 +41,18 @@ class ExcelService:
 
         sheets = []
 
-        file_size = round(
-            file_path.stat().st_size / 1024,
-            2
-        )
+        file_size = round(file_path.stat().st_size / 1024, 2)
 
         for sheet in workbook.sheet_names:
 
-            df = pd.read_excel(
-                file_path,
-                sheet_name=sheet
-            )
+            df = pd.read_excel(file_path, sheet_name=sheet)
 
-            sheets.append(
-                {
-                    "sheet_name": sheet,
-                    "rows": len(df),
-                    "columns": len(df.columns),
-                    "column_names": list(df.columns)
-                }
-            )
+            sheets.append({
+                "sheet_name": sheet,
+                "rows": len(df),
+                "columns": len(df.columns),
+                "column_names": list(df.columns)
+            })
 
         data = {
             "file_name": file_path.name,
@@ -77,42 +62,37 @@ class ExcelService:
         }
 
         self.cache[key] = data
-
         return data
 
     # --------------------------------------------------
 
     def get_file_information(self, file_path):
-
         """
-        Returns metadata for display in Treeview.
+        Returns metadata for Treeview display.
         """
 
         workbook = self.load_file(file_path)
 
-        information = []
+        info = []
 
         for sheet in workbook["sheets"]:
+            info.append({
+                "file_name": workbook["file_name"],
+                "sheet_name": sheet["sheet_name"],
+                "rows": sheet["rows"],
+                "columns": sheet["columns"],
+                "size_kb": workbook["size_kb"],
+                "status": "OK"
+            })
 
-            information.append(
-                {
-                    "file_name": workbook["file_name"],
-                    "sheet_name": sheet["sheet_name"],
-                    "rows": sheet["rows"],
-                    "columns": sheet["columns"],
-                    "size_kb": workbook["size_kb"],
-                    "status": "OK"
-                }
-            )
-
-        return information
+        return info
 
     # --------------------------------------------------
 
-    def get_columns(self, file_path):
-
+    def get_columns(self, file_path, sheet_name=None):
         """
-        Return all columns from first worksheet.
+        Return column names from a sheet.
+        Default = first sheet.
         """
 
         workbook = self.load_file(file_path)
@@ -120,33 +100,41 @@ class ExcelService:
         if not workbook["sheets"]:
             return []
 
-        return workbook["sheets"][0]["column_names"]
+        if sheet_name is None:
+            return workbook["sheets"][0]["column_names"]
+
+        for sheet in workbook["sheets"]:
+            if sheet["sheet_name"] == sheet_name:
+                return sheet["column_names"]
+
+        return []
 
     # --------------------------------------------------
 
     def get_common_columns(self, file_list):
-
         """
-        Find common columns among all loaded files.
+        Find common columns across all files.
         """
 
         if not file_list:
             return []
 
-        common = set(
-            self.get_columns(file_list[0])
-        )
+        common = None
 
-        for file in file_list[1:]:
+        for file in file_list:
+            cols = set(self.get_columns(file))
 
-            common &= set(
-                self.get_columns(file)
-            )
+            if common is None:
+                common = cols
+            else:
+                common &= cols
 
-        return sorted(common)
+        if not common:
+            return []
+
+        return sorted(list(common))
 
     # --------------------------------------------------
 
     def clear_cache(self):
-
         self.cache.clear()
