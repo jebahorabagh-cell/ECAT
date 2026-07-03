@@ -23,6 +23,8 @@ class FilesPage(tk.Frame):
 
         self.file_manager = FileManager()
         self.excel_service = ExcelService()
+        self.common_columns = []
+        self.selected_column = tk.StringVar()
 
         self._create_widgets()
 
@@ -37,6 +39,32 @@ class FilesPage(tk.Frame):
         )
 
         title.pack(anchor="w", padx=10, pady=(10, 5))
+        
+        comparison_frame = tk.Frame(self)
+
+        comparison_frame.pack(
+            fill="x",
+            padx=10,
+            pady=(0, 10)
+        )
+
+        tk.Label(
+            comparison_frame,
+            text="Comparison Column:",
+            font=("Segoe UI", 10, "bold")
+        ).pack(side="left")
+
+        self.column_combo = ttk.Combobox(
+            comparison_frame,
+            textvariable=self.selected_column,
+            state="readonly",
+            width=40
+        )
+
+        self.column_combo.pack(
+            side="left",
+            padx=10
+        )
 
         self.tree = ttk.Treeview(
             self,
@@ -156,6 +184,21 @@ class FilesPage(tk.Frame):
 
         for item in self.tree.get_children():
             self.tree.delete(item)
+            
+        self.common_columns = self.excel_service.get_common_columns(
+            self.file_manager.files()
+        )
+
+        self.column_combo["values"] = self.common_columns
+
+        if len(self.common_columns) == 1:
+            self.column_combo.current(0)
+
+        elif len(self.common_columns) > 1:
+            self.column_combo.current(0)
+
+        else:
+            self.column_combo.set("")
 
         for file_path in self.file_manager.files():
 
