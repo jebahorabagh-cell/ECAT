@@ -7,6 +7,8 @@ import tkinter as tk
 
 from app.gui.files_page import FilesPage
 from app.gui.report_builder_page import ReportBuilderPage
+from app.services.file_manager import FileManager
+from app.services.excel_service import ExcelService
 
 
 class MainWindow:
@@ -22,6 +24,9 @@ class MainWindow:
         self.root.minsize(1000, 650)
 
         self.pages = {}
+        
+        self.file_manager = FileManager()
+        self.excel_service = ExcelService()
 
         self._create_menu()
         self._create_layout()
@@ -157,11 +162,15 @@ class MainWindow:
         # =================================================
 
         self.pages["files"] = FilesPage(
-            self.workspace
+            self.workspace,
+            self.file_manager,
+            self.excel_service
         )
 
         self.pages["report_builder"] = ReportBuilderPage(
-            self.workspace
+            self.workspace,
+            self.file_manager,
+            self.excel_service
         )
 
         for page in self.pages.values():

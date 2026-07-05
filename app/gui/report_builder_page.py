@@ -2,13 +2,23 @@ import tkinter as tk
 from tkinter import ttk
 
 from app.gui.widgets.labeled_combobox import LabeledCombobox
-
+from app.services.report_generator import ReportGenerator
 
 class ReportBuilderPage(ttk.Frame):
 
-    def __init__(self, parent):
+    def __init__(
+        self,
+        parent,
+        file_manager,
+        excel_service
+    ):
 
         super().__init__(parent)
+
+        self.file_manager = file_manager
+        self.excel_service = excel_service
+        
+        self.report_generator = ReportGenerator()
 
         self.build_ui()
 
@@ -191,7 +201,8 @@ class ReportBuilderPage(ttk.Frame):
 
         ttk.Button(
             button_frame,
-            text="Preview Report"
+            text="Preview Report",
+            command=self.preview_report
         ).pack(
             side="left",
             padx=5
@@ -224,4 +235,34 @@ class ReportBuilderPage(ttk.Frame):
             foreground="gray"
         ).pack(
             expand=True
+        )
+        
+# ---------------------------------------------------
+
+    def preview_report(self):
+
+        request = {
+
+            "report_type": self.report_name.get(),
+
+            "group_by": self.group_by.get(),
+
+            "value": self.value.get(),
+
+            "aggregation": self.aggregation.get(),
+
+            "status": self.status.get(),
+
+            "tariff": self.tariff.get(),
+
+            "difference": self.show_difference.get()
+
+        }
+
+        self.report_generator.generate(
+
+            files=self.file_manager.files(),
+
+            request=request
+
         )

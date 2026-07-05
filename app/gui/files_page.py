@@ -17,12 +17,18 @@ from app.services.excel_service import ExcelService
 
 class FilesPage(tk.Frame):
 
-    def __init__(self, parent):
+    def __init__(
+        self,
+        parent,
+        file_manager,
+        excel_service
+    ):
 
         super().__init__(parent)
 
-        self.file_manager = FileManager()
-        self.excel_service = ExcelService()
+        self.file_manager = file_manager
+        self.excel_service = excel_service
+
         self.common_columns = []
         self.selected_column = tk.StringVar()
 
