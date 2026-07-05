@@ -1,11 +1,12 @@
 """
 ECAT - Main Window
-Build 1.0.3
+Build 1.1.8
 """
 
 import tkinter as tk
 
 from app.gui.files_page import FilesPage
+from app.gui.report_builder_page import ReportBuilderPage
 
 
 class MainWindow:
@@ -14,17 +15,18 @@ class MainWindow:
 
         self.root = tk.Tk()
 
-        self.root.title("ECAT - Excel Comparison & Audit Tool")
+        self.root.title("ECAT - Electricity Consumption Analysis Tool")
 
-        self.root.geometry("1100x700")
+        self.root.geometry("1200x750")
 
-        self.root.minsize(900, 600)
+        self.root.minsize(1000, 650)
+
+        self.pages = {}
 
         self._create_menu()
-
         self._create_layout()
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     def _create_menu(self):
 
@@ -36,19 +38,23 @@ class MainWindow:
 
             submenu.add_command(label="Coming Soon")
 
-            menu.add_cascade(label=title, menu=submenu)
+            menu.add_cascade(
+                label=title,
+                menu=submenu
+            )
 
         self.root.config(menu=menu)
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     def _create_layout(self):
 
         self.root.grid_rowconfigure(0, weight=1)
-
         self.root.grid_columnconfigure(1, weight=1)
 
-        # ---------------- Navigation ----------------
+        # =================================================
+        # Navigation Panel
+        # =================================================
 
         navigation = tk.Frame(
             self.root,
@@ -65,76 +71,156 @@ class MainWindow:
 
         navigation.grid_propagate(False)
 
-        tk.Button(
+        tk.Label(
             navigation,
-            text="Files",
-            width=18
+            text="ECAT",
+            font=("Segoe UI", 16, "bold")
         ).pack(
-            padx=10,
-            pady=(15, 5)
+            pady=(20, 25)
         )
 
-        # Placeholders for future modules
+        tk.Button(
+
+            navigation,
+
+            text="Files",
+
+            width=18,
+
+            command=lambda: self.show_page("files")
+
+        ).pack(
+            pady=5
+        )
+
+        tk.Button(
+
+            navigation,
+
+            text="Report Builder",
+
+            width=18,
+
+            command=lambda: self.show_page("report_builder")
+
+        ).pack(
+            pady=5
+        )
+
+        # Disabled (Future)
 
         for item in (
-            "Compare",
-            "Reports",
+
+            "Dashboard",
+
+            "Templates",
+
             "Settings"
+
         ):
 
             tk.Button(
+
                 navigation,
+
                 text=item,
+
                 width=18,
+
                 state="disabled"
+
             ).pack(
-                padx=10,
                 pady=5
             )
 
-        # ---------------- Workspace ----------------
+        # =================================================
+        # Workspace
+        # =================================================
 
-        workspace = tk.Frame(
+        self.workspace = tk.Frame(
             self.root,
             bd=1,
             relief="solid"
         )
 
-        workspace.grid(
+        self.workspace.grid(
             row=0,
             column=1,
             sticky="nsew"
         )
 
-        workspace.grid_rowconfigure(0, weight=1)
-        workspace.grid_columnconfigure(0, weight=1)
+        self.workspace.grid_rowconfigure(0, weight=1)
+        self.workspace.grid_columnconfigure(0, weight=1)
 
-        self.files_page = FilesPage(workspace)
+        # =================================================
+        # Pages
+        # =================================================
 
-        self.files_page.grid(
-            row=0,
-            column=0,
-            sticky="nsew"
+        self.pages["files"] = FilesPage(
+            self.workspace
         )
 
-        # ---------------- Status ----------------
+        self.pages["report_builder"] = ReportBuilderPage(
+            self.workspace
+        )
+
+        for page in self.pages.values():
+
+            page.grid(
+                row=0,
+                column=0,
+                sticky="nsew"
+            )
+
+        
+
+        # =================================================
+        # Status Bar
+        # =================================================
 
         self.status = tk.Label(
+
             self.root,
+
             text="Ready",
+
             anchor="w",
+
             bd=1,
+
             relief="sunken"
+
         )
 
         self.status.grid(
-            row=1,
-            column=0,
-            columnspan=2,
-            sticky="ew"
-        )
 
-    # -------------------------------------------------
+            row=1,
+
+            column=0,
+
+            columnspan=2,
+
+            sticky="ew"
+
+        )
+        
+        # Show first page LAST
+        self.show_page("files")
+    # -----------------------------------------------------
+
+    def show_page(self, page_name):
+
+        page = self.pages.get(page_name)
+
+        if page:
+
+            page.tkraise()
+
+            self.status.config(
+                text=f"Page : {page_name.replace('_',' ').title()}"
+            )
+
+    # -----------------------------------------------------
 
     def run(self):
 
