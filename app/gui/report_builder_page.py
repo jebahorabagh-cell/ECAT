@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from app.gui.widgets.labeled_combobox import LabeledCombobox
 from app.services.report_generator import ReportGenerator
+from app.gui.report_preview import ReportPreview
 
 class ReportBuilderPage(ttk.Frame):
 
@@ -229,12 +230,15 @@ class ReportBuilderPage(ttk.Frame):
             sticky="nsew"
         )
 
-        ttk.Label(
-            preview,
-            text="Report preview will appear here.",
-            foreground="gray"
-        ).pack(
-            expand=True
+        preview.columnconfigure(0, weight=1)
+        preview.rowconfigure(0, weight=1)
+
+        self.report_preview = ReportPreview(preview)
+
+        self.report_preview.grid(
+            row=0,
+            column=0,
+            sticky="nsew"
         )
         
 # ---------------------------------------------------
@@ -259,10 +263,12 @@ class ReportBuilderPage(ttk.Frame):
 
         }
 
-        self.report_generator.generate(
+        report = self.report_generator.generate(
 
             files=self.file_manager.files(),
 
             request=request
 
         )
+
+        self.report_preview.show_report(report)

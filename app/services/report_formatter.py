@@ -17,29 +17,35 @@ class ReportFormatter:
 
     def format(self, df):
 
-        print("\n========== REPORT FORMATTER ==========")
-
-        print("\nInput")
-        print(df.head())
-
         if df.empty:
             return df
 
         df = self._replace_feeder_names(df)
 
-        print("\nAfter Mapping")
-        print(df.head())
-
         df = self._sort_feeders(df)
+    
+        df = self._rename_first_column(df)
 
-        print("\nAfter Sorting")
-        print(df.head())
-
-        print("\n======================================")
+        df = self._format_numeric_columns(df)
 
         return df
-
     # --------------------------------------------------
+    
+    def _clean_column_names(self, df):
+
+        columns = []
+
+        for column in df.columns:
+
+            columns.append(
+                str(column).strip()
+            )
+
+        df.columns = columns
+
+        return df
+    #----------------------------------------------------    
+    
 
     def _replace_feeder_names(self, df):
 
@@ -74,5 +80,30 @@ class ReportFormatter:
         df[location_column] = df[location_column].astype(str)
 
         df = df.reset_index(drop=True)
+
+        return df
+    #--------------------------------------------------------
+        
+    def _rename_first_column(self, df):
+
+        first_column = df.columns[0]
+
+        df = df.rename(
+            columns={
+                first_column: "Feeder"
+            }
+        )
+
+        return df
+    #--------------------------------------------------------
+        
+    def _format_numeric_columns(self, df):
+
+        numeric_columns = df.columns[1:]
+
+        df[numeric_columns] = (
+            df[numeric_columns]
+            .round(2)
+        )
 
         return df
