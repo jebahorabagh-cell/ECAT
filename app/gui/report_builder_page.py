@@ -4,6 +4,7 @@ from tkinter import ttk
 from app.gui.widgets.labeled_combobox import LabeledCombobox
 from app.services.report_generator import ReportGenerator
 from app.gui.report_preview import ReportPreview
+from app.services.excel_exporter import ExcelExporter
 
 class ReportBuilderPage(ttk.Frame):
 
@@ -17,10 +18,10 @@ class ReportBuilderPage(ttk.Frame):
         super().__init__(parent)
 
         self.file_manager = file_manager
-        self.excel_service = excel_service
-        
-        self.report_generator = ReportGenerator()
-
+        self.excel_service = excel_service        
+        self.report_generator = ReportGenerator()        
+        self.exporter = ExcelExporter()
+        self.current_report = None
         self.build_ui()
 
     # ---------------------------------------------------
@@ -211,7 +212,8 @@ class ReportBuilderPage(ttk.Frame):
 
         ttk.Button(
             button_frame,
-            text="Export Excel"
+            text="Export Excel",
+            command=self.export_excel
         ).pack(
             side="left",
             padx=5
@@ -270,5 +272,19 @@ class ReportBuilderPage(ttk.Frame):
             request=request
 
         )
+        
+        self.current_report = report
 
         self.report_preview.show_report(report)
+        
+    def export_excel(self):
+
+        if self.current_report is None:
+            return
+
+        filepath = self.exporter.export(
+            self.current_report,
+            report_name=self.report_name.get()
+        )
+
+        print(f"Report exported to: {filepath}")

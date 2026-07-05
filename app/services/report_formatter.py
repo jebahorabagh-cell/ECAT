@@ -51,10 +51,15 @@ class ReportFormatter:
 
         location_column = df.columns[0]
 
-        df[location_column] = (
-            df[location_column]
-            .apply(business_rules.feeder_name)
-        )
+        def convert(value):
+
+            try:
+                return business_rules.feeder_name(int(value))
+            except (ValueError, TypeError):
+                # Already a summary label like "ZONE 1 SUMMARY"
+                return value
+
+        df[location_column] = df[location_column].apply(convert)
 
         return df
 
@@ -66,6 +71,12 @@ class ReportFormatter:
             business_rules.feeder_name(code)
             for code in business_rules.feeder_sequence()
         ]
+        
+        feeder_order.extend([
+            "ZONE 1 SUMMARY",
+            "ZONE 2 SUMMARY",
+            "DIVISION SUMMARY"
+        ])
 
         location_column = df.columns[0]
 
