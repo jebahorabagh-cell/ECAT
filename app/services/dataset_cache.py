@@ -17,11 +17,12 @@ class DatasetCache:
 
     def __init__(self):
 
-        self.root = Path("ECAT")
+        self.dataset_folder = Path("datasets")
 
-        self.dataset_folder = self.root / "datasets"
-
-        self.dataset_folder.mkdir(parents=True, exist_ok=True)
+        self.dataset_folder.mkdir(
+            parents=True,
+            exist_ok=True
+        )
 
     # --------------------------------------------------
 
@@ -132,3 +133,33 @@ class DatasetCache:
                 datasets.append(json.load(f))
 
         return datasets
+        
+    # --------------------------------------------------
+
+    def load_dataset(self, dataset_name):
+
+        cache = self.dataset_folder / f"{dataset_name}.parquet"
+
+        return pd.read_parquet(cache)
+        
+    # --------------------------------------------------
+
+    def delete_dataset(self, dataset_name):
+
+        parquet = self.dataset_folder / f"{dataset_name}.parquet"
+
+        json_file = self.dataset_folder / f"{dataset_name}.json"
+
+        if parquet.exists():
+
+            parquet.unlink()
+
+        if json_file.exists():
+
+            json_file.unlink()
+            
+    # --------------------------------------------------
+
+    def refresh_dataset(self, excel_path):
+
+        self.create(excel_path)

@@ -12,17 +12,20 @@ class ReportBuilderPage(ttk.Frame):
         self,
         parent,
         file_manager,
-        excel_service
+        excel_service,
+        dataset_manager
     ):
 
         super().__init__(parent)
 
         self.file_manager = file_manager
-        self.excel_service = excel_service        
+        self.excel_service = excel_service 
+        self.dataset_manager = dataset_manager        
         self.report_generator = ReportGenerator()        
         self.exporter = ExcelExporter()
-        self.current_report = None
+        self.current_report = None        
         self.build_ui()
+        
 
     # ---------------------------------------------------
 
@@ -69,6 +72,35 @@ class ReportBuilderPage(ttk.Frame):
             sticky="nsew",
             padx=(0, 10)
         )
+        
+        # ---------------- Datasets ----------------
+
+        dataset_frame = ttk.LabelFrame(
+            left,
+            text="Datasets"
+        )
+
+        dataset_frame.pack(
+            fill="x",
+            padx=10,
+            pady=10
+        )
+
+        self.dataset_vars = {}
+
+        for dataset in self.dataset_manager.datasets():
+
+            name = dataset["dataset_name"]
+
+            var = tk.BooleanVar()
+
+            self.dataset_vars[name] = var
+
+            ttk.Checkbutton(
+                dataset_frame,
+                text=name,
+                variable=var
+            ).pack(anchor="w", padx=10)
 
         self.report_name = LabeledCombobox(
             left,
@@ -288,3 +320,18 @@ class ReportBuilderPage(ttk.Frame):
         )
 
         print(f"Report exported to: {filepath}")
+        
+        
+    # ---------------------------------------------------
+
+    def selected_datasets(self):
+
+        return [
+
+            name
+
+            for name, var in self.dataset_vars.items()
+
+            if var.get()
+
+        ]

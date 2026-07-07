@@ -17,6 +17,12 @@ only this file needs to be updated.
 DIVISION_NAME = "Jabalpur City Division East"
 
 # ==========================================================
+# Dataset Comparison
+# ==========================================================
+
+DEFAULT_KEY_COLUMN = "Consumer Number"
+
+# ==========================================================
 # Feeder Mapping
 # ==========================================================
 

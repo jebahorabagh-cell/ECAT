@@ -7,8 +7,12 @@ import tkinter as tk
 
 from app.gui.files_page import FilesPage
 from app.gui.report_builder_page import ReportBuilderPage
+from app.services.dataset_manager import DatasetManager
 from app.services.file_manager import FileManager
 from app.services.excel_service import ExcelService
+from app.gui.datasets_page import DatasetsPage
+from app.gui.comparison_page import ComparisonPage
+from app.gui.dataset_manager_page import DatasetManagerPage
 
 
 class MainWindow:
@@ -25,9 +29,10 @@ class MainWindow:
 
         self.pages = {}
         
+        self.dataset_manager = DatasetManager()
         self.file_manager = FileManager()
         self.excel_service = ExcelService()
-
+        
         self._create_menu()
         self._create_layout()
 
@@ -56,6 +61,7 @@ class MainWindow:
 
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
+        
 
         # =================================================
         # Navigation Panel
@@ -97,6 +103,21 @@ class MainWindow:
         ).pack(
             pady=5
         )
+        
+              
+        tk.Button(
+
+            navigation,
+
+            text="Comparison",
+
+            width=18,
+
+                    command=lambda: self.show_page("comparison")
+
+        ).pack(
+            pady=5
+        )
 
         tk.Button(
 
@@ -107,6 +128,20 @@ class MainWindow:
             width=18,
 
             command=lambda: self.show_page("report_builder")
+
+        ).pack(
+            pady=5
+        )
+        
+        tk.Button(
+
+            navigation,
+
+            text="Datasets",
+
+            width=18,
+
+            command=lambda: self.show_page("datasets")
 
         ).pack(
             pady=5
@@ -170,8 +205,17 @@ class MainWindow:
         self.pages["report_builder"] = ReportBuilderPage(
             self.workspace,
             self.file_manager,
-            self.excel_service
+            self.excel_service,
+            self.dataset_manager
         )
+        
+      
+        
+        self.pages["comparison"] = ComparisonPage(
+            self.workspace
+        )
+        
+        self.pages["datasets"] = DatasetManagerPage(self.workspace,self.dataset_manager)
 
         for page in self.pages.values():
 

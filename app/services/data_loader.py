@@ -36,3 +36,28 @@ class DataLoader:
             datasets,
             ignore_index=True
         )
+        
+    # --------------------------------------------------
+
+    def load_datasets(self, dataset_names):
+
+        cache = DatasetCache()
+
+        datasets = []
+
+        for name in dataset_names:
+
+            df = cache.load_dataset(name)
+
+            df["Dataset"] = name
+
+            datasets.append(df)
+
+        if not datasets:
+
+            return pd.DataFrame()
+
+        return pd.concat(
+            datasets,
+            ignore_index=True
+        )
