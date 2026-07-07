@@ -8,6 +8,7 @@ Build : 1.2.0
 
 from pathlib import Path
 import pandas as pd
+from app.services.dataset_cache import DatasetCache
 
 
 class DataLoader:
@@ -15,10 +16,12 @@ class DataLoader:
     def load(self, files):
 
         datasets = []
+    
+        cache = DatasetCache()
 
         for file in files:
 
-            df = pd.read_excel(file)
+            df = cache.load_or_create(file)
 
             dataset_name = Path(file).stem
 
