@@ -35,10 +35,10 @@ class ReportGenerator:
 
     # ----------------------------------------------------
 
-    def generate(self, files, request):
+    def generate(self, datasets, request):
 
         # Load all selected files
-        df = self.loader.load(files)
+        df = self.loader.load_datasets(datasets)
 
         # Apply filters
         df = self.filter_engine.apply(df, request)

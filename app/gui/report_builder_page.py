@@ -297,14 +297,30 @@ class ReportBuilderPage(ttk.Frame):
 
         }
 
+        selected = self.selected_datasets()
+
+        if not selected:
+
+            from tkinter import messagebox
+
+            messagebox.showwarning(
+
+                "ECAT",
+
+                "Please select at least one dataset."
+
+            )
+
+            return
+
         report = self.report_generator.generate(
 
-            files=self.file_manager.files(),
+            datasets=selected,
 
             request=request
 
         )
-        
+
         self.current_report = report
 
         self.report_preview.show_report(report)
