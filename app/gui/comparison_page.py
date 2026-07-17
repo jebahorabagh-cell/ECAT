@@ -4,6 +4,7 @@ from tkinter import ttk
 from app.services.dataset_cache import DatasetCache
 from app.services.comparison_engine import ComparisonEngine
 from app.gui.report_preview import ReportPreview
+from app.gui.widgets.multiselect_dropdown import MultiSelectDropdown
 
 
 class ComparisonPage(ttk.Frame):
@@ -37,17 +38,50 @@ class ComparisonPage(ttk.Frame):
 
         top.pack(fill="x", padx=10)
 
-        ttk.Label(top, text="Dataset A").grid(row=0, column=0)
+        ttk.Label(
 
-        self.dataset_a = ttk.Combobox(top, state="readonly", width=30)
+            top,
 
-        self.dataset_a.grid(row=0, column=1, padx=5)
+            text="Datasets"
 
-        ttk.Label(top, text="Dataset B").grid(row=0, column=2)
+        ).grid(
 
-        self.dataset_b = ttk.Combobox(top, state="readonly", width=30)
+            row=0,
 
-        self.dataset_b.grid(row=0, column=3, padx=5)
+            column=0,
+
+            sticky="w"
+
+        )
+
+        self.dataset_selector = MultiSelectDropdown(top)
+
+        self.dataset_selector.grid(
+
+            row=1,
+
+            column=0,
+
+            columnspan=2,
+
+            sticky="w",
+
+            pady=5
+        )
+
+        self.dataset_selector.grid(
+
+            row=1,
+
+            column=0,
+
+            columnspan=2,
+
+            pady=5,
+
+            sticky="w"
+
+        )
 
         ttk.Button(
 
@@ -77,21 +111,16 @@ class ComparisonPage(ttk.Frame):
 
         ]
 
-        self.dataset_a["values"] = datasets
-
-        self.dataset_b["values"] = datasets
+        self.dataset_selector.set_items(datasets)
         
-    # --------------------------------------------------
-
+    
     # --------------------------------------------------
 
     def compare(self):
 
-        dataset_a = self.dataset_a.get()
+        datasets = self.dataset_selector.get_selected()
 
-        dataset_b = self.dataset_b.get()
-
-        if not dataset_a or not dataset_b:
+        if len(datasets) < 2:
 
             from tkinter import messagebox
 
@@ -99,22 +128,24 @@ class ComparisonPage(ttk.Frame):
 
                 "Comparison",
 
-                "Please select both datasets."
+                "Please select at least two datasets."
 
             )
 
             return
+            
+        print(datasets)
 
-        old_df = self.cache.load_dataset(dataset_a)
+        #old_df = self.cache.load_dataset(dataset_a)
 
-        new_df = self.cache.load_dataset(dataset_b)
+        #new_df = self.cache.load_dataset(dataset_b)
 
-        result = self.engine.compare_datasets(
+        #result = self.engine.compare_datasets(
 
-            old_df,
+        #    old_df,
 
-            new_df
+        #    new_df
 
-        )
+       # )
 
-        self.preview.show_report(result)
+        #self.preview.show_report(result)

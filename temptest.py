@@ -1,17 +1,18 @@
-from app.exporters.excel_exporter import ExcelExporter
+import tkinter as tk
 
-exporter = ExcelExporter()
+from app.gui.widgets.multiselect_dropdown import MultiSelectDropdown
 
-exporter.export(
+root = tk.Tk()
 
-    dataframe=report,
+dropdown = MultiSelectDropdown(root)
 
-    filename="Consumption_Report.xlsx",
+dropdown.pack(padx=20, pady=20)
 
-    report_title="Feeder Consumption Report",
+dropdown.set_items([
+    "APR-2026",
+    "MAY-2026",
+    "JUN-2026",
+    "JUL-2026"
+])
 
-    period="Apr 2026 vs May 2026",
-
-    filters="Status=Active | Tariff=LV3"
-
-)
+root.mainloop()
